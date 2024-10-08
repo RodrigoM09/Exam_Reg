@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Exam Registration{% endblock %}</title>
+    <link rel="stylesheet" href="../static/homestyles.css">
+    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="../static/login.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../static/registration/js/filterExams.js"></script>
+    <script src="../static/registration/js/register.js"></script>
+    <script src="../static/registration/js/login.js"></script>
+</head>
+<body>
+    <nav id='navlinks'>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="{% url 'register_exam' %}">Student Exam Registration</a></li>
+            <li><a href="{% url 'view_exams' %}">Professor View Exams</a></li>
+        </ul>
+        <ul id='login'>
+          <li><a href="{% url 'login' %}">Login</a></li>
+
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% endif %}
+          {% if user.is_authenticated %}
+          <p>Welcome, {{ user.username }}</p>
+        </ul>
+
+        {% endif %}
+    </nav>
+    {% block content %}
+    {% endblock %}
+    <footer>
+        <p>&copy; 2024 Exam Registration System</p>
+    </footer>
+</body>
+</html>
+

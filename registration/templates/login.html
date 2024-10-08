@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Exam Registration{% endblock %}
+<link rel="stylesheet" href="../static/login.css">
+
+{% block content %}
+  <div class="main-content">
+    <h1 id='exam_reg'>Login</h1>
+    <form method="post" action="{% url 'login' %}" id="login_form">
+      {% csrf_token %}
+      <label for="username">Username:</label>
+      <input type="text" name="username" id="username" required>
+
+      <br>
+
+      <label for="password">Password:</label>
+      <input type="password" name="password" id="password" required>
+
+      <br>
+
+      <button type="submit" id="login">Login</button>
+    </form>
+  </div>
+
+{% endblock %}

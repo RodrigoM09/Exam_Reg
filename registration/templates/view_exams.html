@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}View Exams{% endblock %}
+{% block content %}
+    <div class="main-content">
+        <h1 id='exam_reg'>View Exams</h1>
+        <table>
+            <tr>
+                <th>Student ID</th>
+                <th>Exam Name</th>
+                <th>Exam Date</th>
+                <th>Exam Time</th>
+                <th>Room</th>
+                <th>Capacity</th>
+            </tr>
+            {% for exam in exams %}
+                <tr>
+                    <td>{{ exam.student_id }}</td>
+                    <td>{{ exam.exam_name }}</td>
+                    <td>{{ exam.exam_date }}</td>
+                    <td>{{ exam.exam_time }}</td>
+                    <td>{{ exam.room }}</td>
+                    <td>{{ exam.capacity }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="filter">
+        <form method="post" action="{% url 'view_exams' %}">
+            {% csrf_token %}
+            <label for="exam_date">Filter by Exam Date:</label>
+            <input type="date" name="exam_date" id="exam_date" required>
+            <button type="submit" id="filter">Filter</button>
+        </form>
+    </div>
+    <a class='btn' href="{% url 'home' %}">Home</a>
+{% endblock %}

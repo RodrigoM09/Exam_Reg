@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Exam Registration{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+        <h1 id='exam_reg'>Exam Registration</h1>
+        <form method="post" action="{% url 'register_exam' %}" id="registration_form">
+            {% csrf_token %}
+            <!-- Display current logged in users name -->
+            <h2>Welcome, {{ student.username }}</h2>
+
+            <!-- Input for exam name -->
+            <label for="exam_name">Exam Name:</label>
+            <input type="text" name="exam_name" id="exam_name" required>
+
+            <br>
+
+            <!-- input for exam location -->
+            <label for="exam_location">Exam Location:</label>
+            <input type="text" name="exam_location" id="exam_location" required>
+
+            <br>
+
+
+            <!-- Input for exam date -->
+            <label for="exam_date">Exam Date:</label>
+            <input type="date" name="exam_date" id="exam_date" required>
+
+            <br>
+
+            <!-- Input for exam time -->
+            <label for="exam_time">Exam Time:</label>
+            <input type="time" name="exam_time" id="exam_time" required>
+
+            <br>
+
+            <!-- Display test capacity for test selected -->
+            <p>Test Capacity: {{ test_capacity }}/20</p>
+          <div class='reg-btn-container'>
+            <!-- Submit button -->
+            <button type="submit" id="register">Register</button>
+            <!-- Cancel Button -->
+            <a class='btn' href="{% url 'home' %}">Cancel</a>
+          </div>
+        </form>
+    </div>
+
+{% endblock %}
