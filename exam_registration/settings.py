@@ -78,8 +78,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'exam_registration',  # Name of your database
-        'USER': 'exam_user',               # MySQL username (root if no other user)
-        'PASSWORD': '',               # Leave it empty if no password
+        'USER': 'root',               # MySQL username (root if no other user)
+        'PASSWORD': 'codeup',               # Leave it empty if no password
         'HOST': 'localhost',          # Since MySQL is hosted locally
         'PORT': '3306',               # Default MySQL port
     }
@@ -127,3 +127,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default backend
+]
+
+AUTH_USER_MODEL = 'registration.User'  # Custom user model

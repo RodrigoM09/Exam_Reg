@@ -82,7 +82,7 @@ CREATE TABLE `auth_permission` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
   CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -91,7 +91,7 @@ CREATE TABLE `auth_permission` (
 
 LOCK TABLES `auth_permission` WRITE;
 /*!40000 ALTER TABLE `auth_permission` DISABLE KEYS */;
-INSERT INTO `auth_permission` VALUES (1,'Can add log entry',1,'add_logentry'),(2,'Can change log entry',1,'change_logentry'),(3,'Can delete log entry',1,'delete_logentry'),(4,'Can view log entry',1,'view_logentry'),(5,'Can add permission',2,'add_permission'),(6,'Can change permission',2,'change_permission'),(7,'Can delete permission',2,'delete_permission'),(8,'Can view permission',2,'view_permission'),(9,'Can add group',3,'add_group'),(10,'Can change group',3,'change_group'),(11,'Can delete group',3,'delete_group'),(12,'Can view group',3,'view_group'),(13,'Can add user',4,'add_user'),(14,'Can change user',4,'change_user'),(15,'Can delete user',4,'delete_user'),(16,'Can view user',4,'view_user'),(17,'Can add content type',5,'add_contenttype'),(18,'Can change content type',5,'change_contenttype'),(19,'Can delete content type',5,'delete_contenttype'),(20,'Can view content type',5,'view_contenttype'),(21,'Can add session',6,'add_session'),(22,'Can change session',6,'change_session'),(23,'Can delete session',6,'delete_session'),(24,'Can view session',6,'view_session'),(25,'Can add student',7,'add_student'),(26,'Can change student',7,'change_student'),(27,'Can delete student',7,'delete_student'),(28,'Can view student',7,'view_student'),(29,'Can add exam registration',8,'add_examregistration'),(30,'Can change exam registration',8,'change_examregistration'),(31,'Can delete exam registration',8,'delete_examregistration'),(32,'Can view exam registration',8,'view_examregistration');
+INSERT INTO `auth_permission` VALUES (1,'Can add log entry',1,'add_logentry'),(2,'Can change log entry',1,'change_logentry'),(3,'Can delete log entry',1,'delete_logentry'),(4,'Can view log entry',1,'view_logentry'),(5,'Can add permission',2,'add_permission'),(6,'Can change permission',2,'change_permission'),(7,'Can delete permission',2,'delete_permission'),(8,'Can view permission',2,'view_permission'),(9,'Can add group',3,'add_group'),(10,'Can change group',3,'change_group'),(11,'Can delete group',3,'delete_group'),(12,'Can view group',3,'view_group'),(13,'Can add user',4,'add_user'),(14,'Can change user',4,'change_user'),(15,'Can delete user',4,'delete_user'),(16,'Can view user',4,'view_user'),(17,'Can add content type',5,'add_contenttype'),(18,'Can change content type',5,'change_contenttype'),(19,'Can delete content type',5,'delete_contenttype'),(20,'Can view content type',5,'view_contenttype'),(21,'Can add session',6,'add_session'),(22,'Can change session',6,'change_session'),(23,'Can delete session',6,'delete_session'),(24,'Can view session',6,'view_session'),(25,'Can add student',7,'add_student'),(26,'Can change student',7,'change_student'),(27,'Can delete student',7,'delete_student'),(28,'Can view student',7,'view_student'),(29,'Can add exam registration',8,'add_examregistration'),(30,'Can change exam registration',8,'change_examregistration'),(31,'Can delete exam registration',8,'delete_examregistration'),(32,'Can view exam registration',8,'view_examregistration'),(33,'Can add exam',9,'add_exam'),(34,'Can change exam',9,'change_exam'),(35,'Can delete exam',9,'delete_exam'),(36,'Can view exam',9,'view_exam'),(37,'Can add user',10,'add_user'),(38,'Can change user',10,'change_user'),(39,'Can delete user',10,'delete_user'),(40,'Can view user',10,'view_user');
 /*!40000 ALTER TABLE `auth_permission` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -231,7 +231,7 @@ CREATE TABLE `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -240,7 +240,7 @@ CREATE TABLE `django_content_type` (
 
 LOCK TABLES `django_content_type` WRITE;
 /*!40000 ALTER TABLE `django_content_type` DISABLE KEYS */;
-INSERT INTO `django_content_type` VALUES (1,'admin','logentry'),(3,'auth','group'),(2,'auth','permission'),(4,'auth','user'),(5,'contenttypes','contenttype'),(8,'registration','examregistration'),(7,'registration','student'),(6,'sessions','session');
+INSERT INTO `django_content_type` VALUES (1,'admin','logentry'),(3,'auth','group'),(2,'auth','permission'),(4,'auth','user'),(5,'contenttypes','contenttype'),(9,'registration','exam'),(8,'registration','examregistration'),(7,'registration','student'),(10,'registration','user'),(6,'sessions','session');
 /*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -296,35 +296,60 @@ LOCK TABLES `django_session` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `exams`
+-- Table structure for table `ExamRegistrations`
 --
 
-DROP TABLE IF EXISTS `exams`;
+DROP TABLE IF EXISTS `ExamRegistrations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `exams` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+CREATE TABLE `ExamRegistrations` (
+  `registration_id` int NOT NULL AUTO_INCREMENT,
+  `student_id` int DEFAULT NULL,
+  `exam_id` int DEFAULT NULL,
+  PRIMARY KEY (`registration_id`),
+  KEY `student_id` (`student_id`),
+  KEY `exam_id` (`exam_id`),
+  CONSTRAINT `examregistrations_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `registration_user` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT `examregistrations_ibfk_2` FOREIGN KEY (`exam_id`) REFERENCES `Exams` (`exam_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ExamRegistrations`
+--
+
+LOCK TABLES `ExamRegistrations` WRITE;
+/*!40000 ALTER TABLE `ExamRegistrations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ExamRegistrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Exams`
+--
+
+DROP TABLE IF EXISTS `Exams`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Exams` (
+  `exam_id` int NOT NULL AUTO_INCREMENT,
   `exam_name` varchar(100) NOT NULL,
   `exam_date` date NOT NULL,
-  `student_id` bigint NOT NULL,
   `location` varchar(100) DEFAULT NULL,
   `room` varchar(50) DEFAULT NULL,
   `exam_time` time DEFAULT NULL,
   `capacity` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `registration_examreg_student_id_9228c9b7_fk_registrat` (`student_id`),
-  CONSTRAINT `registration_examreg_student_id_9228c9b7_fk_registrat` FOREIGN KEY (`student_id`) REFERENCES `registration_student` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`exam_id`),
+  CONSTRAINT `exams_chk_1` CHECK ((`capacity` between 0 and 20))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `exams`
+-- Dumping data for table `Exams`
 --
 
-LOCK TABLES `exams` WRITE;
-/*!40000 ALTER TABLE `exams` DISABLE KEYS */;
-INSERT INTO `exams` VALUES (1,'Math 101','2024-10-10',1,'Main Building','101','09:00:00',30),(2,'Practice 1','2024-09-23',1,'Annex Building','202','10:00:00',25),(3,'Practice 1','2024-09-23',2,'Annex Building','202','10:00:00',25);
-/*!40000 ALTER TABLE `exams` ENABLE KEYS */;
+LOCK TABLES `Exams` WRITE;
+/*!40000 ALTER TABLE `Exams` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Exams` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -355,55 +380,32 @@ INSERT INTO `registration_student` VALUES (1,'John','Doe','0123456789'),(2,'',''
 UNLOCK TABLES;
 
 --
--- Table structure for table `students`
+-- Table structure for table `registration_user`
 --
 
-DROP TABLE IF EXISTS `students`;
+DROP TABLE IF EXISTS `registration_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `students` (
-  `student_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `registration_user` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  PRIMARY KEY (`student_id`),
+  `is_student` tinyint(1) DEFAULT '0',
+  `is_teacher` tinyint(1) DEFAULT '0',
+  `last_login` datetime DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `students`
+-- Dumping data for table `registration_user`
 --
 
-LOCK TABLES `students` WRITE;
-/*!40000 ALTER TABLE `students` DISABLE KEYS */;
-INSERT INTO `students` VALUES (1,'7850321475@student.csn.edu','7850321475'),(2,'9083746521@student.csn.edu','9083746521'),(3,'6482957103@student.csn.edu','6482957103'),(4,'5930482716@student.csn.edu','5930482716'),(5,'4928573019@student.csn.edu','4928573019'),(6,'1230495768@student.csn.edu','1230495768'),(7,'5738294058@student.csn.edu','5738294058'),(8,'3482916570@student.csn.edu','3482916570'),(9,'9073852614@student.csn.edu','9073852614'),(10,'8462831950@student.csn.edu','8462831950'),(11,'6758492310@student.csn.edu','6758492310'),(12,'1029384756@student.csn.edu','1029384756'),(13,'4758293046@student.csn.edu','4758293046'),(14,'6584930217@student.csn.edu','6584930217'),(15,'7493021568@student.csn.edu','7493021568'),(16,'9402736158@student.csn.edu','9402736158'),(17,'1039485762@student.csn.edu','1039485762'),(18,'8394752019@student.csn.edu','8394752019'),(19,'2018374659@student.csn.edu','2018374659'),(20,'3948275016@student.csn.edu','3948275016'),(21,'8492017365@student.csn.edu','8492017365'),(22,'1029485763@student.csn.edu','1029485763'),(23,'9274015836@student.csn.edu','9274015836'),(24,'2057384910@student.csn.edu','2057384910'),(25,'6482937501@student.csn.edu','6482937501'),(26,'5392048173@student.csn.edu','5392048173'),(27,'7653849201@student.csn.edu','7653849201'),(28,'9023847561@student.csn.edu','9023847561'),(29,'5820394765@student.csn.edu','5820394765'),(30,'9182736450@student.csn.edu','9182736450'),(31,'7483926510@student.csn.edu','7483926510'),(32,'6584937201@student.csn.edu','6584937201'),(33,'1928374650@student.csn.edu','1928374650'),(34,'9058473612@student.csn.edu','9058473612'),(35,'2738495016@student.csn.edu','2738495016'),(36,'3857201946@student.csn.edu','3857201946'),(37,'5938201764@student.csn.edu','5938201764'),(38,'2759308416@student.csn.edu','2759308416'),(39,'5849302751@student.csn.edu','5849302751'),(40,'1902847563@student.csn.edu','1902847563'),(41,'9372840156@student.csn.edu','9372840156'),(42,'8402736519@student.csn.edu','8402736519'),(43,'5928470139@student.csn.edu','5928470139'),(44,'3058479216@student.csn.edu','3058479216'),(46,'4920384751@student.csn.edu','4920384751'),(47,'3857401926@student.csn.edu','3857401926'),(48,'6584901372@student.csn.edu','6584901372'),(49,'9384710256@student.csn.edu','9384710256'),(50,'5402839172@student.csn.edu','5402839172'),(51,'9372058146@student.csn.edu','9372058146'),(52,'5000348946@student.csn.edu','5000348946'),(53,'5000348947@student.csn.edu','5000348947'),(54,'5000348948@student.csn.edu','5000348948');
-/*!40000 ALTER TABLE `students` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `teachers`
---
-
-DROP TABLE IF EXISTS `teachers`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `teachers` (
-  `teacher_id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  PRIMARY KEY (`teacher_id`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `teachers`
---
-
-LOCK TABLES `teachers` WRITE;
-/*!40000 ALTER TABLE `teachers` DISABLE KEYS */;
-INSERT INTO `teachers` VALUES (1,'9401837265@teacher.csn.edu','9401837265'),(2,'8492017365@teacher.csn.edu','8492017365'),(3,'5738291047@teacher.csn.edu','5738291047'),(4,'2859401736@teacher.csn.edu','2859401736'),(5,'5948201736@teacher.csn.edu','5948201736');
-/*!40000 ALTER TABLE `teachers` ENABLE KEYS */;
+LOCK TABLES `registration_user` WRITE;
+/*!40000 ALTER TABLE `registration_user` DISABLE KEYS */;
+INSERT INTO `registration_user` VALUES (1,'student1','password123',1,0,NULL),(2,'student2','password456',1,0,NULL),(3,'teacher1','teachpass123',0,1,NULL),(4,'teacher2','teachpass456',0,1,NULL);
+/*!40000 ALTER TABLE `registration_user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -415,4 +417,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-07 18:54:10
+-- Dump completed on 2024-11-05 16:05:30

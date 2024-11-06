@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
-from .models import Student, Exam
-from django.http import HttpResponse
+from django.contrib.auth import authenticate, login, logout
+from .models import Student, Exam, User
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import views as auth_views
 
 def register_exam(request):
     if request.method == 'POST':
@@ -40,9 +42,29 @@ def view_exams(request):
     examinations = Exam.objects.all()
     return render(request, 'view_exams.html', {'exams': examinations})
 
-def login(request):
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        try:
+            # Check the Users table for matching credentials
+            user = User.objects.get(username=username, password=password)
+
+            # Redirect based on role
+            if user.is_student:
+                return redirect('/register_exam/')
+            elif user.is_teacher:
+                return redirect('/view_exams/')
+            else:
+                return HttpResponse("User role not recognized.", status=403)
+        except User.DoesNotExist:
+            return HttpResponse("Invalid username or password.", status=403)
+
     return render(request, 'login.html')
 
-def logout(request):
+
+def logout_view(request):
+    logout(request)
     return redirect('home')
 
