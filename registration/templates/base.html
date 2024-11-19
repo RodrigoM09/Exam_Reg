@@ -16,20 +16,18 @@
     <nav id='navlinks'>
         <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="{% url 'register_exam' %}">Student Exam Registration</a></li>
-            <li><a href="{% url 'view_exams' %}">Professor View Exams</a></li>
+            {% if user.is_authenticated %}
+                {% if user.is_teacher %}
+                    <li><a href="{% url 'view_exams' %}">Professor View Exams</a></li>
+                {% elif user.is_student %}
+                    <li><a href="{% url 'register_exam' %}">Student Exam Registration</a></li>
+                {% endif %}
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+                <li>Welcome, {{ user.first_name }}</li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
+            {% endif %}
         </ul>
-        <ul id='login'>
-          <li><a href="{% url 'login' %}">Login</a></li>
-
-          {% if user.is_authenticated %}
-          <li><a href="{% url 'logout' %}">Logout</a></li>
-          {% endif %}
-          {% if user.is_authenticated %}
-          <p>Welcome, {{ user.username }}</p>
-        </ul>
-
-        {% endif %}
     </nav>
     {% block content %}
     {% endblock %}
@@ -38,4 +36,3 @@
     </footer>
 </body>
 </html>
-

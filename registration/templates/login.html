@@ -5,11 +5,15 @@
 
 {% block content %}
   <div class="main-content">
-    <h1 id='exam_reg'>Login</h1>
-    <form method="post" action="{% url 'login' %}" id="login_form">
+    <h1>Login</h1>
+    {% if message %}
+      <p>{{ message }}</p>
+    {% endif %}
+    <form method="post" action="/login/" id="login_form">
       {% csrf_token %}
       <label for="username">Username:</label>
-      <input type="text" name="username" id="username" required>
+      <input type="text" name="username" id="username" autocomplete="on" required>
+
 
       <br>
 
@@ -18,7 +22,12 @@
 
       <br>
 
-      <button type="submit" id="login">Login</button>
+      <button type="submit" id="login">Login</button>  
+
+
+      {% if error %}
+        <p style="color: red;">{{ error }}</p>
+      {% endif %}
     </form>
   </div>
 
