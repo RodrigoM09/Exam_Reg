@@ -83,6 +83,17 @@ nav ul li a:hover {
     border-radius: 4px;
 }
 
+#login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+ul#login li {
+    color: white;
+}
+
+
 /* Responsive navbar */
 @media (max-width: 768px) {
     nav ul {
