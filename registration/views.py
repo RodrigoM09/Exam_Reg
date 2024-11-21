@@ -7,39 +7,15 @@ from django.contrib.auth.hashers import check_password
 
 
 def register_exam(request):
-    if request.method == 'POST':
-        # Retrieve student ID from session
-        student_id = request.session.get('student_id')
-        if not student_id:
-            return HttpResponse("Error: No student logged in.", status=403)
+    exams = Exam.objects.all()
+    if not exams.exists():
+        print("No exams found.")
+    else:
+        for exam in exams:
+            print(f"Exam: {exam.exam_name}, Date: {exam.exam_date}, Location: {exam.exam_location}")
+    return render(request, 'register_exam.html', {'exams': exams})
 
-        try:
-            # Query the Student table using the student_id
-            student = Student.objects.get(student_id=student_id)
-        except Student.DoesNotExist:
-            return HttpResponse(f"Error: Student with ID {student_id} does not exist.", status=404)
 
-        # Fetch exam details from the POST request
-        exam_name = request.POST.get('exam_name')
-        exam_date = request.POST.get('exam_date')
-        exam_location = request.POST.get('exam_location')
-        exam_time = request.POST.get('exam_time')
-
-        if not (exam_name and exam_date and exam_location and exam_time):
-            return HttpResponse("Error: Missing exam details!", status=400)
-
-        # Create the exam registration
-        Exam.objects.create(
-            student=student,
-            exam_name=exam_name,
-            exam_date=exam_date,
-            exam_location=exam_location,
-            exam_time=exam_time,
-        )
-
-        return HttpResponse("Exam Registered Successfully!", status=201)
-
-    return render(request, 'register_exam.html')
 
 def home(request):
     return render(request, 'home.html')
@@ -63,13 +39,20 @@ def login_view(request):
         except User.DoesNotExist:
             return HttpResponse("Error: User does not exist!", status=404)
 
-        if not check_password(password, user.password):
+        if not user.check_password(password):  # Use the User model's password check
             print(f"Incorrect password for user: {username}")
             return HttpResponse("Error: Incorrect password!", status=401)
 
+        # Log in the user
         login(request, user)
+
+        # Store student_id in session (if applicable)
         request.session['student_id'] = user.student_id
-        print(f"Login successful for user: {username}")
+
+        # Print first name and last name from the database
+        print(f"First Name: {user.first_name}, Last Name: {user.last_name}")
+
+        # Redirect to the home page
         return redirect('home')
 
     return render(request, 'login.html')
