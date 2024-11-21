@@ -19,7 +19,7 @@ $(document).ready(function() {
             url: '/login/',
             data: {
                 username: username,
-                password: password
+                password: password,
             },
             beforeSend: function(xhr){
                 xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');

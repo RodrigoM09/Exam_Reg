@@ -89,8 +89,10 @@ nav ul li a:hover {
     align-items: center;
     color: white;
 }
-ul#login li {
+
+.welcome-message {
     color: white;
+    font-weight: bold;
 }
 
 
