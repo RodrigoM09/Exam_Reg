@@ -3,27 +3,34 @@
 {% block title %}Exam Registration{% endblock %}
 
 {% block content %}
-<div class="main-content">
-    <h1 id="exam_reg">Available Exams</h1>
-    <table id="exams-table">
-        <thead>
-            <tr>
-                <th>Exam Name</th>
-                <th>Exam Date</th>
-                <th>Exam Location</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for exam in exams %}
-            <tr data-exam-id="{{ exam.id }}">
-                <td>{{ exam.exam_name }}</td>
-                <td>{{ exam.exam_date }}</td>
-                <td>{{ exam.exam_location }}</td>
-                <td><button class="register-exam">Register</button></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="main-content">
+        <h1>Available Exams</h1>
+        <table id="exams-table">
+            <thead>
+                <tr>
+                    <th>Exam Name</th>
+                    <th>Exam Date</th>
+                    <th>Exam Location</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                <tr>
+                    <td>{{ exam.exam_name }}</td>
+                    <td>{{ exam.exam_date }}</td>
+                    <td>{{ exam.exam_location }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'register_exam' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="exam_id" value="{{ exam.id }}">
+                            <button type="submit" class="register-exam">Register</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
