@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Registration Confirmation{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <h1>Registration Confirmation</h1>
+    <p>Thank you for registering!</p>
+    <ul>
+        <li><strong>Student Name:</strong> {{ registration.first_name }} {{ registration.last_name }}</li>
+        <li><strong>Username:</strong> {{ registration.username }}</li>
+        <li><strong>Exam Name:</strong> {{ registration.exam_name }}</li>
+        <li><strong>Exam Date:</strong> {{ registration.exam_date }}</li>
+        <li><strong>Exam Location:</strong> {{ registration.exam_location }}</li>
+    </ul>
+    <a href="{% url 'home' %}">Return to Home</a>
+</div>
+{% endblock %}
