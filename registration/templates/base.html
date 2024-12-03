@@ -4,34 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Exam Registration{% endblock %}</title>
-    <link rel="stylesheet" href="../static/homestyles.css">
-    <link rel="stylesheet" href="../static/styles.css">
-    <link rel="stylesheet" href="../static/login.css">
-    <link rel="stylesheet" href="../static/exams.css">
+    {% load static %}
+    <!-- Link styles dynamically using Django's static template tag -->
+    <link rel="stylesheet" href="{% static 'homestyles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+    <link rel="stylesheet" href="{% static 'exams.css' %}">
+    <!-- Include external scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="../static/registration/js/filterExams.js"></script>
-    <script src="../static/registration/js/register.js"></script>
+    <script src="{% static 'registration/js/filterExams.js' %}"></script>
+    <script src="{% static 'registration/js/register.js' %}"></script>
 </head>
 <body>
-    <nav id='navlinks'>
+    <!-- Navigation -->
+    <nav id="navlinks">
         <ul>
             <li><a href="/">Home</a></li>
             {% if user.is_authenticated %}
-            {% if user.is_teacher %}
-            <li><a href="{% url 'view_exams' %}">Professor View Exams</a></li>
-            {% elif user.is_student %}
-            <li><a href="{% url 'register_exam' %}">Student Exam Registration</a></li>
-            {% endif %}
-            <li class="welcome-message">Welcome, {{ user.first_name }}</li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% if user.is_teacher %}
+                    <li><a href="{% url 'view_exams' %}">Professor View Exams</a></li>
+                {% elif user.is_student %}
+                    <li><a href="{% url 'register_exam' %}">Student Exam Registration</a></li>
+                {% endif %}
+                <li class="welcome-message">Welcome, {{ user.first_name }}</li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
             {% else %}
                 <li><a href="{% url 'site_registration' %}">Register</a></li>
                 <li><a href="{% url 'login' %}">Login</a></li>
             {% endif %}
         </ul>
     </nav>
+
+    <!-- Content Block -->
     {% block content %}
     {% endblock %}
+
+    <!-- Footer -->
     <footer>
         <p>&copy; 2024 Exam Registration System</p>
     </footer>

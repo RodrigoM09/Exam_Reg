@@ -34,17 +34,33 @@ def site_registration(request):
             is_teacher=is_teacher
         )
 
-        return HttpResponse(f"User {user.first_name} {user.last_name} created successfully!")
+        # Log the student in and set their session
+        login(request, user)
+        request.session['student_id'] = user.student_id
+
+        # Redirect students to the register_exam page
+        if is_student:
+            return redirect('register_exam')
+
+        # Redirect teachers to the home page
+        if is_teacher:
+            return redirect('home')
 
     return render(request, 'site_registration.html')
 
 
+
+
 def confirmation(request, registration_id):
     try:
+        # Fetch the registration record using registration_id
         registration = Registered.objects.get(registration_id=registration_id)
         return render(request, "confirmation.html", {"registration": registration})
     except Registered.DoesNotExist:
+        # Handle case where the registration record does not exist
         return HttpResponseForbidden("Registration not found.")
+
+
 
 def register_student(request):
         # Fetch Exam details
@@ -74,12 +90,17 @@ def register_exam(request):
         if not student_id:
             return HttpResponseForbidden("You must be logged in to register for an exam.")
 
+        # Ensure the student exists in the database
+        try:
+            student = User.objects.get(student_id=student_id)
+        except User.DoesNotExist:
+            return HttpResponseForbidden("User not found.")
+
         if Registered.objects.filter(student_id=student_id, exam_id=exam_id).exists():
             return HttpResponseForbidden("You are already registered for this exam.")
 
         try:
             exam = Exam.objects.get(id=exam_id)
-            student = User.objects.get(student_id=student_id)
 
             # Save the registration
             registration = Registered.objects.create(
@@ -98,10 +119,8 @@ def register_exam(request):
 
         except Exam.DoesNotExist:
             return HttpResponseForbidden("Exam does not exist.")
-        except User.DoesNotExist:
-            return HttpResponseForbidden("User does not exist.")
 
-    # For GET requests, exclude exams the student is already registered for
+    # For GET requests, show available exams
     student_id = request.session.get("student_id")
     if not student_id:
         return HttpResponseForbidden("You must be logged in to view available exams.")
@@ -111,6 +130,7 @@ def register_exam(request):
     exams = Exam.objects.exclude(id__in=registered_exam_ids)
 
     return render(request, "register_exam.html", {"exams": exams})
+
 
 
 
@@ -125,34 +145,32 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print(f"Username: {username}, Password: {password}")
 
         if not (username and password):
             return HttpResponse("Error: Missing username or password!", status=400)
 
         try:
             user = User.objects.get(username=username)
-            print(f"User found: {user}")
         except User.DoesNotExist:
             return HttpResponse("Error: User does not exist!", status=404)
 
-        if not user.check_password(password):  # Use the User model's password check
-            print(f"Incorrect password for user: {username}")
+        if not user.check_password(password):
             return HttpResponse("Error: Incorrect password!", status=401)
 
         # Log in the user
         login(request, user)
 
-        # Store student_id in session (if applicable)
-        request.session['student_id'] = user.student_id
-
-        # Print first name and last name from the database
-        print(f"First Name: {user.first_name}, Last Name: {user.last_name}")
+        # Store student_id in session
+        if hasattr(user, 'student_id'):
+            request.session['student_id'] = user.student_id
+        else:
+            return HttpResponse("Error: Student ID not found!", status=400)
 
         # Redirect to the home page
         return redirect('home')
 
     return render(request, 'login.html')
+
 
 
 def logout_view(request):
