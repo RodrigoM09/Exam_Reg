@@ -5,22 +5,24 @@ from django.utils import timezone
 from django.conf import settings
 
 class UserManager(BaseUserManager):
-    def create_user(self, username):
+    def create_user(self, username, password=None, **extra_fields):
         if not username:
             raise ValueError('The username must be set')
-        user = self.model(
-            username=username,
-        )
+
+        # Create the user instance
+        user = self.model(username=username, **extra_fields)
+
+        # Set the user's password using the set_password method
+        if password:
+            user.set_password(password)
+
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username):
-        user = self.create_user(
-            username=username,
-        )
-        user.is_admin = True
-        user.save(using=self._db)
-        return user
+def create_superuser(self, username, password=None, **extra_fields):
+    # Set additional flags for superuser
+    extra_fields.setdefault('is_admin', True)
+    return self.create_user(username=username, password=password, **extra_fields)
 class User(AbstractBaseUser):
     student_id = models.BigIntegerField(primary_key=True)
     username = models.CharField(max_length=50, unique=True)
