@@ -6,6 +6,39 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.hashers import check_password
 from django.http import HttpResponseForbidden
 
+def site_registration(request):
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        is_student = bool(request.POST.get('is_student'))
+        is_teacher = bool(request.POST.get('is_teacher'))
+
+        if not (student_id and first_name and last_name and username and password):
+            return HttpResponse("Error: Missing required fields!", status=400)
+
+        # Check if student_id already exists
+        if User.objects.filter(student_id=student_id).exists():
+            return HttpResponse("Error: Student ID already exists!", status=409)
+
+        # Create a new User object
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            student_id=student_id,
+            first_name=first_name,
+            last_name=last_name,
+            is_student=is_student,
+            is_teacher=is_teacher
+        )
+
+        return HttpResponse(f"User {user.first_name} {user.last_name} created successfully!")
+
+    return render(request, 'site_registration.html')
+
+
 def confirmation(request, registration_id):
     try:
         registration = Registered.objects.get(registration_id=registration_id)
@@ -41,6 +74,9 @@ def register_exam(request):
         if not student_id:
             return HttpResponseForbidden("You must be logged in to register for an exam.")
 
+        if Registered.objects.filter(student_id=student_id, exam_id=exam_id).exists():
+            return HttpResponseForbidden("You are already registered for this exam.")
+
         try:
             exam = Exam.objects.get(id=exam_id)
             student = User.objects.get(student_id=student_id)
@@ -65,10 +101,16 @@ def register_exam(request):
         except User.DoesNotExist:
             return HttpResponseForbidden("User does not exist.")
 
-    # For GET requests, render the exam list
-    exams = Exam.objects.all()
-    return render(request, "register_exam.html", {"exams": exams})
+    # For GET requests, exclude exams the student is already registered for
+    student_id = request.session.get("student_id")
+    if not student_id:
+        return HttpResponseForbidden("You must be logged in to view available exams.")
 
+    # Get exams not registered by the student
+    registered_exam_ids = Registered.objects.filter(student_id=student_id).values_list("exam_id", flat=True)
+    exams = Exam.objects.exclude(id__in=registered_exam_ids)
+
+    return render(request, "register_exam.html", {"exams": exams})
 
 
 

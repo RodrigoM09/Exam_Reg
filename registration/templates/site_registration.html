@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Site User Registration{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <h1>Site User Registration</h1>
+    <form method="post" action="{% url 'site_registration' %}" id="registration_form">
+        {% csrf_token %}
+        <label for="student_id">Student ID:</label>
+        <input type="text" name="student_id" id="student_id" required>
+        <br>
+        <label for="first_name">First Name:</label>
+        <input type="text" name="first_name" id="first_name" required>
+        <br>
+        <label for="last_name">Last Name:</label>
+        <input type="text" name="last_name" id="last_name" required>
+        <br>
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+        <br>
+        <!-- Inline checkboxes -->
+        <div class="checkbox-group">
+            <label for="is_student">
+                <input type="checkbox" name="is_student" id="is_student">
+                Student
+            </label>
+            <label for="is_teacher">
+                <input type="checkbox" name="is_teacher" id="is_teacher">
+                Teacher
+            </label>
+        </div>
+        <br>
+        <button type="submit" id="register">Register</button>
+    </form>
+</div>
+{% endblock %}
+

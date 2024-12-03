@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import register_exam, home, view_exams, login_view, logout_view, confirmation
+from .views import register_exam, home, view_exams, login_view, logout_view, confirmation, site_registration
 
 urlpatterns = [
     path('', home, name='home'),  # Landing page
-    path('register_exam/', register_exam, name='register_exam'),  # Registration page
+    path('site_registration/', site_registration, name='site_registration'),  # Site Registration page
+    path('register_exam/', register_exam, name='register_exam'),  # Exam Registration page
     path("confirmation/<int:registration_id>/", confirmation, name="confirmation"),
     path('view_exams/', view_exams, name='view_exams'),
     path('login/', login_view, name='login'),

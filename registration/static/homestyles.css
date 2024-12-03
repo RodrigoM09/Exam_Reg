@@ -1,11 +1,11 @@
 /* Main content area to fill the space between navbar and footer */
 /* Main content area for registration */
-.main-content {
+/* .main-content {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-}
+} */
 
 #registration_form {
     display: flex;
@@ -113,15 +113,16 @@ nav ul li a:hover {
 }
 
 /* Footer styling */
-footer {
+/* footer {
     background-color: #333;
     color: white;
     text-align: center;
     width: 100%;
-    position: fixed;
+    padding: 10px;
+    position: relative;
     bottom: 0;
-    box-sizing: border-box;
-}
+} */
+
 
 /* Responsive Footer */
 @media (max-width: 768px) {
