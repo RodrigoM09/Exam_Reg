@@ -177,3 +177,66 @@ def logout_view(request):
     logout(request)
     return redirect('home')
 
+def profile_view(request):
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden("You must be logged in to view your profile.")
+
+    user = request.user
+    # Fetch the user's registered tests
+    registered_tests = Registered.objects.filter(student_id=user.student_id)
+    exams = Exam.objects.all()  # All available exams for rescheduling
+
+    context = {
+        "user": user,
+        "registered_tests": registered_tests,
+        "exams": exams,
+    }
+
+    return render(request, "profile.html", context)
+
+
+# Remove a test registration
+def remove_test(request, registration_id):
+    if request.method == "POST":
+        try:
+            registration = Registered.objects.get(registration_id=registration_id)
+            registration.delete()  # Delete the test registration
+            return redirect("profile")
+        except Registered.DoesNotExist:
+            return HttpResponseForbidden("Test not found.")
+
+# Reschedule a test
+def reschedule_test(request, registration_id):
+    if request.method == "POST":
+        exam_id = request.POST.get("exam_id")
+        try:
+            registration = Registered.objects.get(registration_id=registration_id)
+            exam = Exam.objects.get(id=exam_id)
+            # Update the registration details
+            registration.exam_id = exam.id
+            registration.exam_name = exam.exam_name
+            registration.exam_date = exam.exam_date
+            registration.exam_location = exam.exam_location
+            registration.save()
+            return redirect("profile")
+        except (Registered.DoesNotExist, Exam.DoesNotExist):
+            return HttpResponseForbidden("Invalid test or exam data.")
+
+def edit_profile(request):
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden("You must be logged in to edit your profile.")
+
+    user = request.user
+
+    if request.method == "POST":
+        user.first_name = request.POST.get("first_name")
+        user.last_name = request.POST.get("last_name")
+        user.email = request.POST.get("email")
+        user.save()
+        return redirect("profile")
+
+    context = {
+        "user": user,
+    }
+
+    return render(request, "edit_profile.html", context)
