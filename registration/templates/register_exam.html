@@ -22,6 +22,7 @@
                   <td>{{ exam.exam_date }}</td>
                   <td>{{ exam.exam_location }}</td>
                   <td>
+                    {% if exam.is_registered %}
                       <form method="POST" action="{% url 'register_exam' %}">
                           {% csrf_token %}
                           <input type="hidden" name="exam_id" value="{{ exam.id }}">
