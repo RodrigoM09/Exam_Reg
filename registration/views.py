@@ -1,10 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from .models import Student, Exam, User, Registered
-from django.http import HttpResponse, JsonResponse
-from django.contrib.auth import views as auth_views
-from django.contrib.auth.hashers import check_password
-from django.http import HttpResponseForbidden
+from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 def site_registration(request):
     if request.method == 'POST':
@@ -137,9 +136,27 @@ def register_exam(request):
 def home(request):
     return render(request, 'home.html')
 
+# view exams and filter exams by student_id, exam_name, exam_date, exam_location
 def view_exams(request):
-    examinations = Exam.objects.all()
-    return render(request, 'view_exams.html', {'exams': examinations})
+    student_id = request.GET.get('student_id')
+    exam_name = request.GET.get('exam_name')
+    exam_date = request.GET.get('exam_date')
+    exam_location = request.GET.get('exam_location')
+
+    exams = Exam.objects.all()
+
+    if student_id:
+        exams = exams.filter(student_id=student_id)
+    if exam_name:
+        exams = exams.filter(exam_name=exam_name)
+    if exam_date:
+        exams = exams.filter(exam_date=exam_date)
+    if exam_location:
+        exams = exams.filter(exam_location=exam_location)
+
+    exams = Registered.objects.all()
+    return render(request, "view_exams.html", {"exams": exams})
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -240,3 +257,105 @@ def edit_profile(request):
     }
 
     return render(request, "edit_profile.html", context)
+
+def manage_exams(request):
+    exams = Exam.objects.all()
+    return render(request, "manage_exams.html", {"exams": exams})
+
+@csrf_exempt
+def add_exam(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # Parse JSON request body
+            exam_name = data.get("exam_name")
+            exam_date = data.get("exam_date")
+            exam_location = data.get("exam_location")
+            capacity = data.get("capacity")
+
+            # Validate data
+            if not all([exam_name, exam_date, exam_location, capacity]):
+                return JsonResponse({"success": False, "error": "All fields are required."})
+
+            # Create the new exam
+            Exam.objects.create(
+                exam_name=exam_name,
+                exam_date=exam_date,
+                exam_location=exam_location,
+                capacity=capacity,
+            )
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+    return JsonResponse({"success": False, "error": "Invalid request method."})
+
+def get_exam(request, exam_id):
+    try:
+        # Fetch the exam by ID
+        exam = Exam.objects.get(id=exam_id)
+
+        # Return the exam details in JSON format
+        return JsonResponse({
+            "success": True,
+            "exam": {
+                "id": exam.id,
+                "exam_name": exam.exam_name,
+                "exam_date": str(exam.exam_date),  # Convert date to string
+                "exam_location": exam.exam_location,
+                "capacity": exam.capacity,
+            }
+        })
+    except Exam.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Exam not found."})
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)})
+
+@csrf_exempt
+def edit_exam(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            exam_id = data.get("id")
+            exam_name = data.get("exam_name")
+            exam_date = data.get("exam_date")
+            exam_location = data.get("exam_location")
+            capacity = data.get("capacity")
+
+            exam = Exam.objects.get(id=exam_id)
+            exam.exam_name = exam_name
+            exam.exam_date = exam_date
+            exam.exam_location = exam_location
+            exam.capacity = capacity
+            exam.save()
+
+            return JsonResponse({"success": True})
+        except Exam.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Exam not found."})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+
+    return JsonResponse({"success": False, "error": "Invalid request method."})
+
+@csrf_exempt
+def delete_exam(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            exam_id = data.get("id")
+
+            # Validate exam ID
+            if not exam_id:
+                return JsonResponse({"success": False, "error": "Invalid exam ID."})
+
+            # Find and delete the exam
+            try:
+                exam = Exam.objects.get(id=exam_id)
+                exam.delete()
+                return JsonResponse({"success": True})
+            except Exam.DoesNotExist:
+                return JsonResponse({"success": False, "error": "Exam not found."})
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "error": "Invalid JSON data."})
+
+    return JsonResponse({"success": False, "error": "Invalid request method."})
+
+

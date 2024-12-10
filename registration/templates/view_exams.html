@@ -1,36 +1,48 @@
 {% extends 'base.html' %}
 {% block title %}View Exams{% endblock %}
 {% block content %}
-    <div class="main-content">
-        <h1 id='exam_reg'>View Exams</h1>
-        <table>
+<div class="main-content">
+    <h1 id="exam_reg">View Exams</h1>
+    <div class="filter">
+      <form>
+        <input type="text" id="filter" placeholder="Search for exams...">
+
+        <select id="filterBy">
+            <option value="student_id">Student ID</option>
+            <option value="exam_name">Exam Name</option>
+            <option value="exam_date">Exam Date</option>
+            <option value="exam_time">Exam Time</option>
+            <option value="Location">Location</option>
+            <option value="capacity">Capacity</option>
+        </select>
+      </form>
+        <button id="filterButton">Filter</button>
+        <button id="clear">Clear</button>
+    </div>
+    <div class="add">
+        <a href="{% url 'manage_exam' %}">Manage Exam</a>
+    </div>
+    <table id="examTable">
+        <thead>
             <tr>
                 <th>Student ID</th>
                 <th>Exam Name</th>
                 <th>Exam Date</th>
                 <th>Exam Time</th>
-                <th>Room</th>
-                <th>Capacity</th>
+                <th>Location</th>
             </tr>
+        </thead>
+        <tbody>
             {% for exam in exams %}
-                <tr>
-                    <td>{{ exam.student_id }}</td>
-                    <td>{{ exam.exam_name }}</td>
-                    <td>{{ exam.exam_date }}</td>
-                    <td>{{ exam.exam_time }}</td>
-                    <td>{{ exam.room }}</td>
-                    <td>{{ exam.capacity }}</td>
-                </tr>
+            <tr>
+                <td>{{ exam.student_id }}</td>
+                <td>{{ exam.exam_name }}</td>
+                <td>{{ exam.exam_date }}</td>
+                <td>{{ exam.exam_time }}</td>
+                <td>{{ exam.exam_location }}</td>
+            </tr>
             {% endfor %}
-        </table>
-    </div>
-    <div class="filter">
-        <form method="post" action="{% url 'view_exams' %}">
-            {% csrf_token %}
-            <label for="exam_date">Filter by Exam Date:</label>
-            <input type="date" name="exam_date" id="exam_date" required>
-            <button type="submit" id="filter">Filter</button>
-        </form>
-    </div>
-    <a class='btn' href="{% url 'home' %}">Home</a>
+        </tbody>
+    </table>
+</div>
 {% endblock %}

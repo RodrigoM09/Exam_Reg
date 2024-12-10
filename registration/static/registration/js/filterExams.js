@@ -1,41 +1,43 @@
-// Exam Filtering Script, should be filterable by exam type, exam date, and exam location
+$(document).ready(function () {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-$(document).ready(function() {
-    $('#filter').click(function() {
-        filterExams();
+        $("#filterButton").click(function () {
+            const filterBy = $("#filterBy").val();
+            const filterValue = $("#filter").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/view_exams/",
+                data: {
+                    filter_by: filterBy,
+                    filter_value: filterValue,
+                    csrfmiddlewaretoken: csrftoken,
+                },
+                success: function (response) {
+                    const tableBody = $("#examTable tbody");
+                    tableBody.empty();
+
+                    response.exams.forEach(function (exam) {
+                        const row = `
+                            <tr>
+                                <td>${exam.student_id}</td>
+                                <td>${exam.exam_name}</td>
+                                <td>${exam.exam_date}</td>
+                                <td>${exam.exam_time}</td>
+                                <td>${exam.room}</td>
+                                <td>${exam.capacity}</td>
+                            </tr>`;
+                        tableBody.append(row);
+                    });
+                },
+                error: function () {
+                    alert("Error filtering exams.");
+                },
+            });
+        });
+
+        $("#clear").click(function () {
+            $("#filter").val("");
+            $("#examTable tbody tr").show();
+        });
     });
-});
-
-$(document).ready(function() {
-    $('#cancel').click(function() {
-        window.location.href = '/home/';
-    });
-  });
-
-function filterExams() {
-    var exam_type = $('#exam_type').val();
-    var exam_date = $('#exam_date').val();
-    var exam_location = $('#exam_location').val();
-    var data = {
-        'exam_type': exam_type,
-        'exam_date': exam_date,
-        'exam_location': exam_location,
-    };
-
-    $.ajax({
-        type: 'POST',
-        url: '/filter/',
-        data: data,
-        success: function(response) {
-          print(response);
-            if (response['status'] == 'success') {
-                alert('Exams filtered successfully');
-                window.location.href = '/home/';
-            } else {
-                alert('No exams found');
-            }
-        }
-    });
-}
-
-
