@@ -1,43 +1,45 @@
-$(document).ready(function () {
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+document.getElementById("filterButton").addEventListener("click", function (e) {
+    e.preventDefault();
 
-        $("#filterButton").click(function () {
-            const filterBy = $("#filterBy").val();
-            const filterValue = $("#filter").val();
+    const filterBy = document.getElementById("filterBy").value;
+    const filterValue = document.getElementById("filter").value;
+    const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
 
-            $.ajax({
-                type: "POST",
-                url: "/view_exams/",
-                data: {
-                    filter_by: filterBy,
-                    filter_value: filterValue,
-                    csrfmiddlewaretoken: csrftoken,
-                },
-                success: function (response) {
-                    const tableBody = $("#examTable tbody");
-                    tableBody.empty();
+    fetch("/view_exams/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrfToken,
+        },
+        body: new URLSearchParams({
+            filter_by: filterBy,
+            filter_value: filterValue,
+        }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                const tableBody = document.querySelector("#examTable tbody");
+                tableBody.innerHTML = ""; // Clear existing rows
 
-                    response.exams.forEach(function (exam) {
-                        const row = `
-                            <tr>
-                                <td>${exam.student_id}</td>
-                                <td>${exam.exam_name}</td>
-                                <td>${exam.exam_date}</td>
-                                <td>${exam.exam_time}</td>
-                                <td>${exam.room}</td>
-                                <td>${exam.capacity}</td>
-                            </tr>`;
-                        tableBody.append(row);
-                    });
-                },
-                error: function () {
-                    alert("Error filtering exams.");
-                },
-            });
+                data.exams.forEach((exam) => {
+                    const row = `
+                        <tr>
+                            <td>${exam.id}</td>
+                            <td>${exam.exam_name}</td>
+                            <td>${exam.exam_date}</td>
+                            <td>${exam.exam_time}</td>
+                            <td>${exam.exam_location}</td>
+                            <td>${exam.capacity}</td>
+                        </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            } else {
+                alert("Error: " + data.error);
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while filtering exams.");
         });
-
-        $("#clear").click(function () {
-            $("#filter").val("");
-            $("#examTable tbody tr").show();
-        });
-    });
+});

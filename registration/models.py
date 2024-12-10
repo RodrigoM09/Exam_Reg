@@ -63,8 +63,7 @@ class Exam(models.Model):
     exam_name = models.CharField(max_length=255)
     exam_date = models.DateField()
     exam_location = models.CharField(max_length=255, null=True)
-    # room = models.CharField(max_length=50, null=True)
-    # time = models.TimeField(null=True)
+    exam_time = models.TimeField()
     capacity = models.IntegerField()
     class Meta:
         db_table = 'Exams'

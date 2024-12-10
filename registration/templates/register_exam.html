@@ -12,6 +12,7 @@
                   <th>Exam Name</th>
                   <th>Exam Date</th>
                   <th>Exam Location</th>
+                  <th>Capacity</th>
                   <th>Action</th>
               </tr>
           </thead>
@@ -21,6 +22,7 @@
                   <td>{{ exam.exam_name }}</td>
                   <td>{{ exam.exam_date }}</td>
                   <td>{{ exam.exam_location }}</td>
+                  <td>{{ exam.capacity }}</td>
                   <td>
                       <form method="POST" action="{% url 'register_exam' %}">
                           {% csrf_token %}

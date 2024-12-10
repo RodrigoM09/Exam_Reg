@@ -1,6 +1,8 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
-from .models import Student, Exam, User, Registered
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from .models import Exam, User, Registered
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -136,26 +138,33 @@ def register_exam(request):
 def home(request):
     return render(request, 'home.html')
 
-# view exams and filter exams by student_id, exam_name, exam_date, exam_location
+@csrf_exempt
 def view_exams(request):
-    student_id = request.GET.get('student_id')
-    exam_name = request.GET.get('exam_name')
-    exam_date = request.GET.get('exam_date')
-    exam_location = request.GET.get('exam_location')
+    if request.method == "POST":
+        filter_by = request.POST.get("filter_by", "")
+        filter_value = request.POST.get("filter_value", "")
 
-    exams = Exam.objects.all()
+        valid_fields = ["student_id", "exam_name", "exam_date", "exam_time", "exam_location", "capacity"]
+        if filter_by not in valid_fields:
+            return JsonResponse({"success": False, "error": "Invalid filter field"}, status=400)
 
-    if student_id:
-        exams = exams.filter(student_id=student_id)
-    if exam_name:
-        exams = exams.filter(exam_name=exam_name)
-    if exam_date:
-        exams = exams.filter(exam_date=exam_date)
-    if exam_location:
-        exams = exams.filter(exam_location=exam_location)
+        exams = Registered.objects.all()
+        if filter_value:
+            filter_kwargs = {f"{filter_by}__icontains": filter_value}
+            exams = exams.filter(**filter_kwargs)
 
-    exams = Registered.objects.all()
-    return render(request, "view_exams.html", {"exams": exams})
+        exam_list = list(
+            exams.values(
+                "student_id", "exam_name", "exam_date", "exam_time", "exam_location", "capacity"
+            )
+        )
+        return JsonResponse({"success": True, "exams": exam_list})
+
+    if request.method == "GET":
+        exams = Registered.objects.all()
+        return render(request, "view_exams.html", {"exams": exams})
+
+    return JsonResponse({"success": False, "error": "Invalid request method."}, status=400)
 
 
 def login_view(request):
@@ -239,28 +248,36 @@ def reschedule_test(request, registration_id):
         except (Registered.DoesNotExist, Exam.DoesNotExist):
             return HttpResponseForbidden("Invalid test or exam data.")
 
+@login_required
 def edit_profile(request):
-    if not request.user.is_authenticated:
-        return HttpResponseForbidden("You must be logged in to edit your profile.")
-
-    user = request.user
-
     if request.method == "POST":
-        user.first_name = request.POST.get("first_name")
-        user.last_name = request.POST.get("last_name")
-        user.email = request.POST.get("email")
+        user = request.user
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+        student_id = request.POST.get("student_id")
+
+        # Update user fields
+        user.first_name = first_name
+        user.last_name = last_name
+        user.username = username
+        user.student_id = student_id  # Assuming you added a student_id field to the User model
+
+        # Handle password update only if provided
+        if password:
+            if password == confirm_password:
+                user.set_password(password)
+            else:
+                messages.error(request, "Passwords do not match.")
+                return redirect("edit_profile")
+
         user.save()
+        messages.success(request, "Profile updated successfully.")
         return redirect("profile")
 
-    context = {
-        "user": user,
-    }
-
-    return render(request, "edit_profile.html", context)
-
-def manage_exams(request):
-    exams = Exam.objects.all()
-    return render(request, "manage_exams.html", {"exams": exams})
+    return render(request, "edit_profile.html", {"user": request.user})
 
 @csrf_exempt
 def add_exam(request):
@@ -358,4 +375,6 @@ def delete_exam(request):
 
     return JsonResponse({"success": False, "error": "Invalid request method."})
 
-
+def manage_exams(request):
+    exams = Exam.objects.all()  # Query all exams from the database
+    return render(request, "manage_exams.html", {"exams": exams})
