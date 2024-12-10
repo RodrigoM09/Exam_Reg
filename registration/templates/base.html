@@ -11,6 +11,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="{% static 'registration/js/filterExams.js' %}"></script>
     <script src="{% static 'registration/js/register.js' %}"></script>
+    <script src="{% static 'registration/js/manage_exams.js' %}"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -23,8 +24,7 @@
                 {% elif user.is_student %}
                     <li><a href="{% url 'register_exam' %}">Student Exam Registration</a></li>
                 {% endif %}
-                <li class="welcome-message">Welcome, {{ user.first_name }}</li>
-                <li><a href="{% url 'profile' %}">Profile</a></li>
+                <li><a href="{% url 'profile' %}" class="welcome-message">Welcome, {{ user.first_name }}</a></li>
                 <li><a href="{% url 'logout' %}">Logout</a></li>
             {% else %}
                 <li><a href="{% url 'site_registration' %}">Register</a></li>
@@ -32,7 +32,6 @@
             {% endif %}
         </ul>
     </nav>
-
     <!-- Content Block -->
     {% block content %}
     {% endblock %}

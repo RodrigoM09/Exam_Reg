@@ -65,7 +65,7 @@ class Exam(models.Model):
     exam_location = models.CharField(max_length=255, null=True)
     # room = models.CharField(max_length=50, null=True)
     # time = models.TimeField(null=True)
-    # capacity = models.IntegerField()
+    capacity = models.IntegerField()
     class Meta:
         db_table = 'Exams'
 
